@@ -27,7 +27,7 @@ app.post("/", (req, res) => {
 
     var jsonData = JSON.stringify(data);
 
-    var proxyUrl = "http://proxy.krzn.de:3128";
+    var proxyUrl = "";
 
     var proxiedRequest = request.defaults({'proxy': proxyUrl});
     
@@ -35,26 +35,33 @@ app.post("/", (req, res) => {
         uri: "https://us19.api.mailchimp.com/3.0/lists/34d749ee71",
         method: "POST",
         headers:{
-            "Authorization":"nausmeister 4a4392012b6aa3a1c7ce910630380d95-us19"
+            "Authorization":"nausmeister 52bd66c83ab8964be8967b01c3f3dd96-us19"
         },
         body: jsonData
     };
     
-    proxiedRequest.post(options, (error, resp, body) => {
-        console.log(resp);
+    // proxiedRequest.post(options, (error, resp, body) => {
+    //     console.log(resp.statusCode);
+    // });
+
+    request(options, (error, resp, body) => {
+        var statusCode = resp.statusCode;
+        if(error || statusCode !== 200 ){
+            res.sendFile(__dirname + "/failure.html");
+        } else {
+            res.sendFile(__dirname + "/success.html");
+        }
     });
+});
 
-
+app.post("/failure", (req, res) => {
+    res.redirect("/");
 });
 
 app.get("/", (req, resp) => {
     resp.sendFile(__dirname + "/signup.html");
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
     console.log("Listening to port 3000");
 });
-// API Key
-// 4a4392012b6aa3a1c7ce910630380d95-us19
-//list Key
-//8e9f50b0b6
